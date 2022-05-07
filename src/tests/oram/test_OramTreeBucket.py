@@ -9,11 +9,11 @@ class TestOramTreeBucket(TestCase):
         block_size = 200
         index = 4
         bucket: OramTreeBucket = OramTreeBucket(index=index, capacity=capacity, block_size=block_size)
-        bucket.add(bytes("lior kesten1", "utf-8"))
-        bucket.add(bytes("lior kesten2", "utf-8"))
-        bucket.add(bytes("lior kesten3", "utf-8"))
-        bucket.add(bytes("lior kesten4", "utf-8"))
-        bucket.add(bytes("lior kesten5", "utf-8"))
+        bucket.add("file1", bytes("lior kesten1", "utf-8"))
+        bucket.add("file2", bytes("lior kesten2", "utf-8"))
+        bucket.add("file3", bytes("lior kesten3", "utf-8"))
+        bucket.add("file4", bytes("lior kesten4", "utf-8"))
+        bucket.add("file5", bytes("lior kesten5", "utf-8"))
         bucket_as_bytes = bucket.write_bucket_to_bytes()
         new_bucket = OramTreeBucket.read_bucket_from_bytes(index, bucket_as_bytes, block_size, capacity)
         assert len(new_bucket.get_blocks()) == len(bucket.get_blocks())

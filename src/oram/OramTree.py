@@ -12,9 +12,10 @@ class OramTree:
     def __init__(self, number_of_levels: int, block_size: int, storage_client: IStorageClient):
         self._number_of_buckets = 2 ** number_of_levels
         self._levels = number_of_levels
+        self._number_of_blocks_in_bucket = number_of_levels
         self._storage_client = storage_client
         self._block_size = block_size
-        self._buckets = [OramTreeBucket(i, number_of_levels, self._block_size) for i in range(self._number_of_buckets)]
+        self._buckets = [OramTreeBucket(i, self._number_of_blocks_in_bucket, self._block_size) for i in range(self._number_of_buckets)]
         self._encryptor = SymmetricEncryptor()
         self._bucket_index_to_cypher_object: Dict[int, SymmetricEncryptionObject] = dict()
 
@@ -38,7 +39,7 @@ class OramTree:
         # Decrypt the buckets
         plain_buckets_content: List[bytes] = [self._encryptor.decrypt(symmetric_object) for symmetric_object in symmetric_objects]
         buckets: List[OramTreeBucket] = \
-            [OramTreeBucket.read_bucket_from_bytes(i, plain_bucket_content, self._block_size, self._number_of_buckets) for i, plain_bucket_content in zip(path_indexes, plain_buckets_content)]
+            [OramTreeBucket.read_bucket_from_bytes(i, plain_bucket_content, self._block_size, self._number_of_blocks_in_bucket) for i, plain_bucket_content in zip(path_indexes, plain_buckets_content)]
         return buckets
 
     #

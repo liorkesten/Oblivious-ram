@@ -23,8 +23,6 @@ class OramTreeBucket:
             return None
 
         random_block = random.choice(self._blocks)
-        if (random_block is None or random_block.is_dummy()):
-            raise Exception("No block found")
         return random_block
 
     def add(self, file_name: str, plain_text: bytes):
@@ -67,5 +65,7 @@ class OramTreeBucket:
         # Pad with dummies blocks
         for i in range(len(self._blocks), self._capacity):
             data += OramTreeBlock(is_dummy=True, block_size=self._block_size).write_block_to_bytes()
+
+        print(f"Size of bucket <{self._index}>: {len(data)}")
 
         return data
