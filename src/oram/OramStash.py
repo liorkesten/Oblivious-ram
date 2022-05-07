@@ -7,7 +7,16 @@ from src.oram.OramTreeBucket import OramTreeBucket
 class OramStash:
     def __init__(self, capacity=0):
         self._capacity = capacity
-        self._stash: List[OramTreeBlock] = []
+        self._stash: List[OramTreeBucket] = []
+
+    def get_buckets(self) -> List[OramTreeBucket]:
+        return self._stash
+
+    def get_root_bucket(self) -> OramTreeBucket:
+        if len(self._stash) == 0:
+            raise Exception("Stash is empty")
+
+        return self._stash[0]
 
     def add_buckets(self, buckets: List[OramTreeBucket]):
         for bucket in buckets:
@@ -15,12 +24,7 @@ class OramStash:
 
     def add_bucket(self, bucket: OramTreeBucket):
         # TODO should I check the capacity?
-        # Add bucket to stash -> extract blocks from bucket
-        blocks_of_buckets = bucket.get_blocks()
-        self._stash.extend(blocks_of_buckets)
-
-    def add_block(self, block: OramTreeBlock):
-        self._stash.append(block)
+        self._stash.append(bucket)
 
     def get(self, file_path):
         index = self.try_get_index(file_path)
@@ -29,18 +33,19 @@ class OramStash:
 
         raise Exception("File not found in stash")
 
-    def get_and_pop(self, file_path: str):
-        index = self.try_get_index(file_path)
-        if index is not None:
-            value = self._stash.pop(index)
-            return value
+    def get_block_and_remove_from_bucket(self, file_path: str) -> OramTreeBlock:
+        index_block_of_file = self.try_get_index(file_path)
+        if index_block_of_file is None:
+            return None
 
-        raise Exception("File not found in stash")
+        removed_block = self._stash[index_block_of_file].remove(file_path)
+        return removed_block
 
-    def try_get_index(self, item: str):
-        for i in range(len(self._stash)):
-            if self._stash[i] == item:  # TODO I need to check item against the file_path - handle with encryption
-                return i
+    def try_get_index(self, file_path: str) -> int:
+        for i, bucket in enumerate(self._stash):
+            for block in bucket.get_blocks():
+                if block.get_file_name() == file_path:
+                    return i
 
         return None
 
@@ -54,6 +59,6 @@ class OramStash:
 
         raise Exception("File not found in stash")
 
-    def add(self, file_path, data):
-        # TODO should create block object
-        self._stash.append(data)
+    # def add(self, file_path: str, data : bytes):
+    #     # TODO should create block object
+    #     self._stash.append(data)

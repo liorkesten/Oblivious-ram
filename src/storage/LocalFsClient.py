@@ -10,15 +10,15 @@ class LocalFsClient(IStorageClient):
             os.makedirs(working_dir)
         self.working_dir = working_dir
 
-    def read(self, filename) -> str:
+    def read(self, filename) -> bytes:
         # read the file and return the context as string
         full_file_path = os.path.join(self.working_dir, filename)
-        with open(full_file_path, "r") as f:
+        with open(full_file_path, "rb") as f:
             return f.read()
 
-    def write(self, filename, data) -> str:
+    def write(self, filename: str, data: bytes) -> str:
         # write the data to the file
         full_file_path = os.path.join(self.working_dir, filename)
-        with open(full_file_path, "w+") as f:
+        with open(full_file_path, "wb+") as f:
             f.write(data)
             return "File written successfully"

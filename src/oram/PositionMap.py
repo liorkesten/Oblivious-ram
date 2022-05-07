@@ -26,7 +26,7 @@ class PositionMap:
 
     def remove(self, key: str):
         if not self.contains(key):
-            raise KeyError(key)
+            return None  # TODO maybe raise KeyError(key)
 
         del self._position_map[key]
 

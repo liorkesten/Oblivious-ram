@@ -17,13 +17,18 @@ class OramTreeBucket:
     def __repr__(self):
         return str(self._blocks)
 
-    def add(self, plain_text: bytes):
+    def add(self, file_name: str, plain_text: bytes):
         assert len(self._blocks) < self._capacity, "Node is full"
-        new_block = OramTreeBlock(is_dummy=False, plain_text=plain_text, block_size=self._block_size)
+        new_block = OramTreeBlock(is_dummy=False, file_name=file_name, plain_text=plain_text, block_size=self._block_size)
         self._blocks.append(new_block)
 
-    def remove(self, block: OramTreeBlock):
-        assert len(self._blocks) > 0, "Node is empty"
+    def remove(self, file_path) -> OramTreeBlock:
+        for block in self._blocks:
+            if block.get_file_name() == file_path:
+                self._blocks.remove(block)  # TODO is  it working or should I use del?
+                return block
+
+        raise Exception("File not found")
 
     def get_blocks(self) -> List[OramTreeBlock]:
         return self._blocks

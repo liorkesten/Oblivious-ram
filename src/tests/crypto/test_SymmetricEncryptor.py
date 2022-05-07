@@ -19,7 +19,7 @@ class MyTestCase(unittest.TestCase):
         plain_text1 = enc.decrypt(r1).decode('ascii')
         plain_text2 = enc.decrypt(r2).decode('ascii')
         assert s == plain_text1 == plain_text2
-        assert not r1.cipher_text == r2.cipher_text
+        assert not r1._cipher_text == r2._cipher_text
 
 
 if __name__ == '__main__':
