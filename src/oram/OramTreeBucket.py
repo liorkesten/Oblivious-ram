@@ -66,6 +66,6 @@ class OramTreeBucket:
         for i in range(len(self._blocks), self._capacity):
             data += OramTreeBlock(is_dummy=True, block_size=self._block_size).write_block_to_bytes()
 
-        print(f"Size of bucket <{self._index}>: {len(data)}")
+        # print(f"Size of bucket <{self._index}>: {len(data)}")
 
         return data

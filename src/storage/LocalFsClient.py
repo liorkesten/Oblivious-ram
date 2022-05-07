@@ -16,10 +16,12 @@ class LocalFsClient(IStorageClient):
         with open(full_file_path, "rb") as f:
             return f.read()
 
-    def write(self, filename: str, data: bytes) -> str:
+    def write(self, filename: str, data: bytes) -> bytes:
         # write the data to the file
         full_file_path = os.path.join(self.working_dir, filename)
         # print(f"writing to {full_file_path}. size_of_data: {len(data)}")
         with open(full_file_path, "wb+") as f:
             f.write(data)
-            return "File written successfully"
+            return data
+
+        return None

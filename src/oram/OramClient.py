@@ -11,7 +11,7 @@ from src.storage.IStorageClient import IStorageClient
 from src.storage.LocalFsClient import LocalFsClient
 
 
-class Oram:
+class OramClient:
     def __init__(self, number_of_files: int, file_size: int, storage_client: IStorageClient = LocalFsClient()):
         self.__validate_input(file_size, number_of_files)
 
