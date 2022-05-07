@@ -1,6 +1,6 @@
 import math
 import random
-from typing import List, Dict
+from typing import List, Dict, Tuple
 
 from src.crypto.SymmetricEncryptionObject import SymmetricEncryptionObject
 from src.crypto.SymmetricEncryptor import SymmetricEncryptor
@@ -42,12 +42,14 @@ class OramTree:
         return buckets
 
     #
+    def convert_leaf_index_to_binary(self, leaf_index) -> str:
+        return format(leaf_index, 'b').zfill(self._levels - 1)
 
     def get_path_index(self, leaf_index) -> List[int]:
         assert self._number_of_buckets > leaf_index >= 0
         path = []
         cur = 0
-        leaf_index_as_binary = format(leaf_index, 'b').zfill(self._levels - 1)
+        leaf_index_as_binary = self.convert_leaf_index_to_binary(leaf_index)
 
         for i in range(len(leaf_index_as_binary)):
             path.append(cur)
@@ -68,6 +70,7 @@ class OramTree:
 
     def __write_array_of_buckets(self, buckets: List[OramTreeBucket]) -> None:
         for bucket in buckets:
+            self._buckets[bucket.get_index()] = bucket  # Update bucket
             bucket_index: int = bucket.get_index()
             bucket_as_bytes = bucket.write_bucket_to_bytes()
             symmetric_object: SymmetricEncryptionObject = self._encryptor.encrypt(bucket_as_bytes)
@@ -80,3 +83,19 @@ class OramTree:
     # def read_bucket_at_path_and_level(self, leaf_index, level) -> OramTreeBucket:
     #     path = self.get_path_index(leaf_index)
     #     return self._buckets[path[level]]
+    def get_bucket(self, bucket_index: int) -> OramTreeBucket:
+        assert 0 <= bucket_index < self._number_of_buckets, "Bucket index out of range"
+        return self._buckets[bucket_index]
+
+    def get_children_of_bucket(self, bucket_index: int) -> Tuple[OramTreeBucket, OramTreeBucket]:
+        assert 0 <= bucket_index < self._number_of_buckets, "Bucket index out of range"
+        left = self._buckets[2 * bucket_index + 1]
+        right = self._buckets[2 * bucket_index + 2]
+        return (left, right)
+
+    def get_random_bucket_on_level(self, level) -> OramTreeBucket:
+        assert 0 <= level < self._levels, "Level out of range"
+        offset = (2 ** level) - 1
+        number_of_buckets_in_level = 2 ** level
+        random_index = random.randint(0, number_of_buckets_in_level - 1) + offset
+        return self._buckets[random_index]

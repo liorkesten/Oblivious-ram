@@ -16,7 +16,7 @@ class SymmetricEncryptor:
         num_of_padding_bytes = self.get_num_of_padding_bytes(data)
         if num_of_padding_bytes > 0:
             data += bytes([0] * num_of_padding_bytes)
-            print(f"Padding data (len <{len(data)}>): {num_of_padding_bytes}")
+            # print(f"Padding data (len <{len(data)}>): {num_of_padding_bytes}")
 
         iv = os.urandom(16)
         cipher = Cipher(algorithms.AES(self.key), modes.CBC(iv))
@@ -35,7 +35,7 @@ class SymmetricEncryptor:
         plain_text = decryptor.update(cypher_text) + decryptor.finalize()
         plain_text = plain_text[:-symmetric_crypto_object.get_num_of_padding_bytes()]
 
-        print(f"Plain Text:{plain_text}. removed padding:{symmetric_crypto_object.get_num_of_padding_bytes()}")
+        # print(f"Plain Text:{plain_text}. removed padding:{symmetric_crypto_object.get_num_of_padding_bytes()}")
         return plain_text
 
     @staticmethod

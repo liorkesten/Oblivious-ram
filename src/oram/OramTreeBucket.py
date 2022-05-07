@@ -1,3 +1,4 @@
+import random
 from typing import List
 
 from src.oram.OramTreeBlock import OramTreeBlock
@@ -16,6 +17,15 @@ class OramTreeBucket:
 
     def __repr__(self):
         return str(self._blocks)
+
+    def get_random_block(self) -> OramTreeBlock:
+        if len(self._blocks) == 0:
+            return None
+
+        random_block = random.choice(self._blocks)
+        if (random_block is None or random_block.is_dummy()):
+            raise Exception("No block found")
+        return random_block
 
     def add(self, file_name: str, plain_text: bytes):
         assert len(self._blocks) < self._capacity, "Node is full"
