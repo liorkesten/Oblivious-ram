@@ -19,3 +19,9 @@ class RemoteFsClient(IStorageClient):
         read_url = f"{self.url}/write"
         response = requests.post(url=read_url, params={"filename": filename}, data=data, headers={"Content-Type": "text/plain"})
         return response.content
+
+    def delete(self, filename: str) -> bool:
+        # delete the file and return the context as string
+        read_url = f"{self.url}/delete"
+        response = requests.delete(url=read_url, params={"filename": filename})
+        return response.status_code == 200

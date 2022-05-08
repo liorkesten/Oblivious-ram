@@ -51,12 +51,26 @@ class OramHTTPRequestHandler(BaseHTTPRequestHandler):
                     content = self.local_fs_client.read(file_path)
                     return self.write_response(200, content, "text/plain")
                 except FileNotFoundError:
-                    return self.write_response(404, "404 Not Found", "text/plain")
+                    return self.write_response(404, b"404 Not Found", "text/plain")
+            case default:
+                return self.unknown_route()
+
+    def do_DELETE(self):
+        parsed_url = urlparse(self.path)
+        print(f"Handling Delete request - {parsed_url.path}")
+        match parsed_url.path:
+            case "/":
+                pass
+            case "/delete":
+                file_path = parse_qs(parsed_url.query)['filename'][0]
+                response = self.local_fs_client.delete(file_path)
+                return self.write_response(200, response, "text/plain")
+
             case default:
                 return self.unknown_route()
 
     def unknown_route(self):
-        self.write_response(404, "404 Not Found", "text/plain")
+        self.write_response(404, b"404 Not Found", "text/plain")
 
     def write_response(self, status_code: int, content: bytes, content_type: str):
         self.send_response(status_code)

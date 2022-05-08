@@ -38,6 +38,9 @@ class OramClient:
 
         return None
 
+    def delete(self, file_path: str) -> None:
+        self.__access("delete", file_path, None)
+
     def __access(self, operation: str, file_path: str, data: bytes) -> bytes:
         self._stash.clear()  # TODO I think that I should clean the stash before every operation
 
@@ -51,7 +54,7 @@ class OramClient:
         # remove block from the bucket and the position map
         old_block: OramTreeBlock = self._stash.get_block_and_remove_from_bucket(file_path)
         if old_block is None and operation == "read":
-            raise Exception(f"File {file_path} does not exist")
+            return None  # TODO maybe I should write the stash again and reencrypt the files
 
         self._position_map.remove(file_path)
 
@@ -68,6 +71,10 @@ class OramClient:
             self._stash.get_root_bucket().add(old_block.get_file_name(), old_block.get_plain_text())
             new_position = self.__get_random_leaf()
             self._position_map.set(old_block.get_file_name(), new_position)
+
+        elif operation == "delete":
+            if old_block is None:
+                raise Exception(f"File {file_path} does not exist")
 
         # Write all path into storage
         self._tree.write_path(self._stash.get_buckets())

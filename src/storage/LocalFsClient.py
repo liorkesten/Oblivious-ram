@@ -3,6 +3,7 @@ import os
 
 
 class LocalFsClient(IStorageClient):
+
     def __init__(self, working_dir="/"):
         working_dir = os.path.join(working_dir, "buckets")
         # create dir if not exists
@@ -25,3 +26,11 @@ class LocalFsClient(IStorageClient):
             return data
 
         return None
+
+    def delete(self, filename) -> bytes:
+        full_file_path = os.path.join(self.working_dir, filename)
+        try:
+            os.remove(full_file_path)
+            return b"File deleted"
+        except FileNotFoundError:
+            return b"File not found"

@@ -11,3 +11,7 @@ class IStorageClient:
     @abstractmethod
     def write(self, filename, data) -> bytes:
         raise NotImplementedError
+
+    @abstractmethod
+    def delete(self, filename) -> bytes:
+        raise NotImplementedError
