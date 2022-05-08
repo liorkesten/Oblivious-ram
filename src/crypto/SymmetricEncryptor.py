@@ -1,12 +1,15 @@
+import hashlib
 import os
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 from src.crypto.SymmetricEncryptionObject import SymmetricEncryptionObject
+import hmac
 
 
 class SymmetricEncryptor:
     def __init__(self):
         self.key = os.urandom(32)
+        self._mac_key = os.urandom(32)
 
     def encrypt(self, data: bytes) -> SymmetricEncryptionObject:
         if bytes is None:
@@ -23,15 +26,20 @@ class SymmetricEncryptor:
         encryptor = cipher.encryptor()
         cipher_text = encryptor.update(data) + encryptor.finalize()
         # print(f"Finished to encrypt data with IV {iv}- Cipher Text:{cipher_text}")
-
-        return SymmetricEncryptionObject(iv, cipher_text, num_of_padding_bytes)
+        signature = hmac.new(self._mac_key, cipher_text, hashlib.sha512).digest()
+        return SymmetricEncryptionObject(iv, cipher_text, num_of_padding_bytes, signature)
 
     def decrypt(self, symmetric_crypto_object: SymmetricEncryptionObject) -> bytes:
         # print(f"Starting to decrypt data: {symmetric_crypto_object}")
-
         cipher = Cipher(algorithms.AES(self.key), modes.CBC(symmetric_crypto_object.get_iv()))
         decryptor = cipher.decryptor()
         cypher_text = symmetric_crypto_object.get_cipher_text()
+
+        # Veirfy the signature
+        new_signature = hmac.new(self._mac_key, cypher_text, hashlib.sha512).digest()
+        if not hmac.compare_digest(symmetric_crypto_object.get_signature(), new_signature):
+            raise ValueError("Signature is not valid")
+
         plain_text = decryptor.update(cypher_text) + decryptor.finalize()
         plain_text = plain_text[:-symmetric_crypto_object.get_num_of_padding_bytes()]
 

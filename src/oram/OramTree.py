@@ -91,7 +91,7 @@ class OramTree:
         assert 0 <= bucket_index < self._number_of_buckets, "Bucket index out of range"
         left = self._buckets[2 * bucket_index + 1]
         right = self._buckets[2 * bucket_index + 2]
-        return (left, right)
+        return left, right
 
     def get_random_bucket_on_level(self, level) -> OramTreeBucket:
         assert 0 <= level < self._levels, "Level out of range"
