@@ -14,7 +14,7 @@ class OramTree:
         self._number_of_blocks_in_bucket = number_of_levels
         self._storage_client = storage_client
         self._block_size = block_size
-        self._buckets = [OramTreeBucket(i, self._number_of_blocks_in_bucket, self._block_size) for i in range(self._number_of_buckets)]
+        self._buckets = [OramTreeBucket(i, self._number_of_blocks_in_bucket, self._block_size) for i in range(self._number_of_buckets - 1)]
         self._encryptor = SymmetricEncryptor()
         self._bucket_index_to_cypher_object: Dict[int, SymmetricEncryptionObject] = dict()
 
@@ -63,7 +63,7 @@ class OramTree:
         return path
 
     def get_random_leaf(self) -> int:
-        return random.randint(0, self._levels + 1)  # TODO verify randint second parameter
+        return random.randint(0, self._levels - 1)
 
     def write_path(self, buckets: List[OramTreeBucket]) -> None:
         self.__write_array_of_buckets(buckets)

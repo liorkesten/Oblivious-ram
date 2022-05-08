@@ -6,7 +6,7 @@ from src.storage.LocalFsClient import LocalFsClient
 
 
 class OramHTTPRequestHandler(BaseHTTPRequestHandler):
-    local_fs_client = LocalFsClient("C:\workspace\Studies\AdvancedCrypto\Oram\Server")
+    local_fs_client = LocalFsClient("/")
 
     def __init__(self, request: bytes, client_address: tuple[str, int], server: socketserver.BaseServer):
         super().__init__(request, client_address, server)
@@ -75,5 +75,9 @@ class OramHTTPRequestHandler(BaseHTTPRequestHandler):
     def write_response(self, status_code: int, content: bytes, content_type: str):
         self.send_response(status_code)
         self.send_header('Content-type', content_type)
+        # The following headers are needed in order to support persistent connections : for more information - https://stackoverflow.com/questions/55764440/python-http-simple-server-persistent-connections
+        self.send_header("Connection", "keep-alive")
+        self.send_header("Content-Length", str(len(content)))
+
         self.end_headers()
         self.wfile.write(content)

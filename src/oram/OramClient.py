@@ -25,8 +25,8 @@ class OramClient:
 
     @staticmethod
     def __validate_input(file_size: int, number_of_files: int):
-        assert (math.log2(number_of_files) % 2) == 0, "Number of files must be a power of 2"
-        assert (math.log2(number_of_files) % 2) == 0, "File size must be a power of 2"
+        assert (number_of_files & (number_of_files - 1)) == 0, "Number of files must be a power of 2"
+        assert (file_size & (file_size - 1)) == 0, "File size must be a power of 2"
 
     def read(self, file_path: str) -> bytes:
         return self.__access("read", file_path, None)

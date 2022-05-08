@@ -44,12 +44,14 @@ class Test(TestCase):
     #     assert data_as_string == (file_content + "1"), f"Files content are not equal: \nExpected {(file_content + '1')}\nActual {data_as_string}"
 
     def test_oram_remote_client_delete(self):
-        oram_manager: OramClient = OramClient(16, 512, RemoteFsClient())
+        oram_manager: OramClient = OramClient(2048, 512, RemoteFsClient())
         file_content = "hello, this is the content of file number "
         oram_manager.write("file1", bytes(file_content + "1", "utf-8"))
         data_as_string: str = oram_manager.read("file1").decode("utf-8")
+        assert data_as_string == (file_content + "1"), f"Files content are not equal: \nExpected {(file_content + '1')}\nActual {data_as_string}"
         oram_manager.delete("file1")
         assert oram_manager.read("file1") is None, f"File is not deleted"
+
 
 if __name__ == '__main__':
     unittest.main()
